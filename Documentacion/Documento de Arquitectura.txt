@@ -1,0 +1,40 @@
+Documento de Arquitectura
+Diagrama de Alto Nivel
+
+graph TD
+    User[Visitante] -->|HTTPS| CDN[Vercel Edge Network]
+    CDN -->|Load React App| FE[Frontend (React + TS)]
+    FE -->|Animation Libs| GPU[Browser GPU (Framer Motion/Three.js)]
+    
+    Admin[Dueño] -->|Login| FE
+    
+    FE -->|API Requests (SDK)| SB[Supabase (BaaS)]
+    SB -->|Auth| Auth[Supabase Auth]
+    SB -->|Data| DB[PostgreSQL]
+    SB -->|Assets| Storage[Supabase Storage buckets]
+
+Stack Tecnológico
+Frontend: React 18+, TypeScript.
+
+Estilos: TailwindCSS (para estructura rápida), CSS Modules (para estilos complejos).
+
+Animación/Interacción:
+
+Framer Motion: Para el Scrollytelling y transiciones de página.
+
+React Force Graph (o similar): Para el grafo de nodos de habilidades.
+
+Backend & DB: Supabase (PostgreSQL).
+
+Hosting: Vercel.
+
+Patrón de Diseño: Feature-based & Composable
+Dado que usaremos React, no usaremos MVC estricto, sino una arquitectura basada en Hooks y Contexto:
+
+Components: UI pura (Botones, Cards, Hero).
+
+Features: Lógica de negocio agrupada (ej: features/projects/ProjectCard.tsx).
+
+Hooks (Custom): useProjects(), useScrollProgress(). Encapsulan la llamada a Supabase.
+
+Context: ThemeContext para manejar el estado global "Recruiter vs Geek".

@@ -1,0 +1,56 @@
+Contrato de Datos (Interface Definitions)
+Aunque usamos Supabase Client directamente, definir estas interfaces en TypeScript es crucial para que Google IA Studio genere el código correcto.
+
+Archivo: types/database.ts
+
+TypeScript
+
+// Definición del Proyecto
+export interface Project {
+  id: string; // UUID
+  title: string;
+  short_description: string; // Para la card
+  full_description: string; // Para el modal/detalle (soporta Markdown)
+  cover_image: string; // URL de Supabase Storage
+  technologies: Skill[]; // Array de objetos Skill
+  demo_link?: string;
+  repo_link?: string;
+}
+
+// Definición de Certificación
+export interface Certification {
+  id: string;
+  title: string;
+  issuer: string; // Entidad emisora (ej: Google, Udemy)
+  issue_date: string; // ISO Date
+  category: 'event' | 'study' | 'competition';
+  credential_url: string; // Imagen del diploma
+  // La innovación: link opcional a un proyecto
+  related_project_id?: string; 
+}
+
+// Definición de Skill (Nodo del grafo)
+export interface Skill {
+  id: string;
+  name: string;
+  icon: string;
+  category: 'language' | 'framework' | 'tool';
+  proficiency: number; // 1-100 (para tamaño del nodo)
+}
+Ejemplo de Flujo de Datos (JSON Response esperado del Backend): Al pedir GET /projects con sus skills:
+
+JSON
+
+[
+  {
+    "id": "123-abc",
+    "title": "E-commerce Dashboard",
+    "technologies": [
+      { "name": "React", "icon": "react.svg" },
+      { "name": "Supabase", "icon": "supabase.png" }
+    ],
+    "related_certs": [
+      { "title": "React Advanced Patterns", "issuer": "Udemy" }
+    ]
+  }
+]

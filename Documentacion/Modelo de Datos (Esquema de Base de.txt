@@ -1,0 +1,144 @@
+Modelo de Datos (Esquema de Base de Datos)
+Este esquema está diseñado para PostgreSQL (Supabase). Utiliza UUIDs para los identificadores principales y establece las relaciones necesarias para vincular certificaciones con proyectos.
+
+A. Descripción de Entidades y Atributos
+1. Tabla: profiles
+
+Propósito: Almacena la información personal del dueño del portafolio.
+
+id: UUID (Clave Primaria) - Vinculado al auth.users de Supabase.
+
+full_name: Texto - Nombre completo a mostrar.
+
+bio_short: Texto - Descripción breve para el Hero section.
+
+bio_long: Texto (Markdown) - Descripción detallada para la sección "Sobre mí".
+
+cv_url: Texto - Enlace al archivo PDF en Supabase Storage.
+
+avatar_url: Texto - Enlace a la foto de perfil.
+
+social_links: JSONB - Objeto con enlaces (LinkedIn, GitHub, Twitter).
+
+2. Tabla: projects
+
+Propósito: Contiene el portafolio de trabajos realizados.
+
+id: UUID (Clave Primaria).
+
+title: Texto - Título del proyecto.
+
+slug: Texto - URL amigable (ej: mi-proyecto-increible).
+
+short_description: Texto - Resumen para la tarjeta en la galería.
+
+full_description: Texto (Markdown) - Explicación detallada del proyecto.
+
+cover_image_url: Texto - Imagen principal.
+
+gallery_images: Array de Texto - URLs de imágenes adicionales.
+
+demo_url: Texto - Enlace al despliegue en vivo.
+
+repo_url: Texto - Enlace al repositorio de código.
+
+created_at: Timestamp - Fecha de creación del registro.
+
+is_featured: Booleano - Si debe aparecer destacado en el Home.
+
+3. Tabla: skills
+
+Propósito: Catálogo de tecnologías y herramientas dominadas.
+
+id: UUID (Clave Primaria).
+
+name: Texto - Nombre de la tecnología (ej: "React").
+
+icon_url: Texto - Icono SVG/PNG.
+
+category: Texto/Enum - Valores: 'Frontend', 'Backend', 'DevOps', 'Design'.
+
+proficiency: Entero - Nivel de dominio (1-100) para visualizaciones o grafos.
+
+4. Tabla: project_skills (Tabla Pivote)
+
+Propósito: Relación Muchos-a-Muchos entre Proyectos y Skills.
+
+project_id: UUID (Clave Foránea -> projects.id).
+
+skill_id: UUID (Clave Foránea -> skills.id).
+
+5. Tabla: certifications
+
+Propósito: Diplomas, cursos y eventos.
+
+id: UUID (Clave Primaria).
+
+title: Texto - Nombre del certificado.
+
+issuer: Texto - Entidad emisora (ej: "Platzi", "Google", "AWS").
+
+issue_date: Fecha - Cuándo se obtuvo.
+
+category: Texto/Enum - Valores: 'Event', 'Study', 'Competition'.
+
+credential_url: Texto - Enlace a la credencial digital o imagen.
+
+related_project_id: UUID (Clave Foránea -> projects.id) - (Opcional) Esta es la columna clave que permite vincular un certificado teórico con un proyecto práctico.
+
+B. Definición SQL (Quick Copy para Supabase)
+Puedes usar este bloque si necesitas alimentar a la IA con la estructura exacta de la base de datos:
+
+SQL
+
+-- 1. Tabla de Perfil
+create table public.profiles (
+  id uuid references auth.users not null primary key,
+  full_name text,
+  bio_short text,
+  bio_long text,
+  cv_url text,
+  avatar_url text,
+  social_links jsonb
+);
+
+-- 2. Tabla de Proyectos
+create table public.projects (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  slug text unique not null,
+  short_description text,
+  full_description text, -- Soporta Markdown
+  cover_image_url text,
+  demo_url text,
+  repo_url text,
+  is_featured boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 3. Tabla de Skills
+create table public.skills (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  icon_url text,
+  category text check (category in ('Frontend', 'Backend', 'DevOps', 'Design', 'Soft')),
+  proficiency int check (proficiency between 0 and 100)
+);
+
+-- 4. Tabla Pivote Proyectos <-> Skills
+create table public.project_skills (
+  project_id uuid references public.projects(id) on delete cascade,
+  skill_id uuid references public.skills(id) on delete cascade,
+  primary key (project_id, skill_id)
+);
+
+-- 5. Tabla de Certificaciones
+create table public.certifications (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  issuer text not null,
+  issue_date date,
+  category text check (category in ('Event', 'Study', 'Competition')),
+  credential_url text,
+  related_project_id uuid references public.projects(id) on delete set null
+);proyecto específico.

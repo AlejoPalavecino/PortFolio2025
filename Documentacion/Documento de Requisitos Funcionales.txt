@@ -1,0 +1,21 @@
+Documento de Requisitos Funcionales (FRD)
+Módulo 1: Core / Navegación (Público)
+HU-01 (Modo Dual): Como visitante, quiero un interruptor (Toggle) "Recruiter Mode / Geek Mode" persistente, para elegir entre una interfaz limpia de lectura rápida o una experiencia animada e inmersiva.
+
+HU-02 (Scrollytelling): Como visitante en "Geek Mode", quiero que el fondo y los elementos cambien dinámicamente al hacer scroll, para sentir que me cuentan una historia.
+
+HU-03 (Grafo de Skills): Como visitante, quiero ver las tecnologías (skills) como nodos conectados en lugar de una lista plana, reaccionando a mi mouse.
+
+Módulo 2: Contenido (Público)
+HU-04 (Showcase Proyectos): Como visitante, quiero filtrar proyectos por tecnología utilizada y ver una galería visual de los mismos.
+
+HU-05 (Certificaciones Linkeadas): Como visitante, al ver una certificación, quiero un botón "Ver Aplicación" que me lleve al proyecto donde se usó ese conocimiento.
+
+HU-06 (Descarga CV): Como visitante (especialmente Recruiter), quiero un botón flotante siempre visible para descargar el CV en PDF.
+
+Módulo 3: Panel de Administración (Privado)
+HU-07 (Auth): Como administrador, quiero loguearme de forma segura para que nadie más pueda editar mi portafolio.
+
+HU-08 (Gestión de Proyectos): Como administrador, quiero crear, editar y eliminar proyectos, subiendo imágenes de portada y definiendo el stack tecnológico usado.
+
+HU-09 (Gestión de Certs): Como administrador, quiero subir certificados (imagen/PDF) y asignarlos a una categoría (Evento, Estudio, Competencia).

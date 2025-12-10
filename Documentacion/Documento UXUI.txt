@@ -1,0 +1,26 @@
+Documento UX/UI
+Paleta de Colores Sugerida (Tema "Cyber-Clean")
+El sistema debe soportar el cambio drástico entre modos.
+
+Modo Recruiter: Fondo Blanco (#FAFAFA), Texto Gris Oscuro (#333333), Acento Azul Corporativo (#2563EB). Tipografía Sans-Serif limpia (Inter o Roboto).
+
+Modo Geek: Fondo Oscuro Profundo (#0F172A), Texto Blanco, Acentos Neón (Cyan #06B6D4 y Púrpura #8B5CF6). Gradientes y Glassmorphism en tarjetas.
+
+Mapa del Sitio
+Home:
+
+Hero Section (Saludo + Toggle Switch).
+
+About Me (Bio).
+
+Timeline / Scrollytelling area.
+
+Portfolio Hub: Grid de proyectos con filtros.
+
+Lab / Skills: Visualización de grafo de nodos.
+
+Certificaciones: Lista visual con badges de categorías.
+
+Admin Login: (/admin) - Ruta protegida.
+
+Admin Dashboard: (/admin/dashboard) - Gestión de tablas.

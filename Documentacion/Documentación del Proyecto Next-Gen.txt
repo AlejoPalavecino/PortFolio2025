@@ -1,0 +1,19 @@
+Documentación del Proyecto: "Next-Gen Interactive Portfolio"
+1. Informe de Presentación (Executive Summary)
+Visión: Crear un portafolio personal que trascienda el CV tradicional, funcionando como una aplicación web inmersiva que demuestra habilidades técnicas mediante su propia construcción y diseño.
+
+Propuesta de Valor:
+
+Experiencia Dual: Un interruptor de modo que permite a los reclutadores ver información rápida y limpia, y a los perfiles técnicos disfrutar de una experiencia visual inmersiva (Scrollytelling, shaders, grafos).
+
+Gestión Dinámica: A diferencia de los portafolios estáticos, este cuenta con un CMS propio para actualizar logros en tiempo real.
+
+Validación de Habilidades: Conexión directa entre teoría (Certificaciones) y práctica (Proyectos).
+
+Alcance:
+
+Frontend Público: Landing Page interactiva, detalle de proyectos, visualización de skills.
+
+Backend/BaaS: Base de datos, Autenticación (Admin) y Almacenamiento de archivos.
+
+Panel de Administración: Interfaz privada (CRUD) para gestión de contenido.

@@ -1,0 +1,223 @@
+/**
+ * Archivo de estilos principales del Portfolio
+ * Incluye directivas de Tailwind y estilos base personalizados
+ */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* Directivas principales de Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * CUSTOM PROPERTIES (CSS Variables)
+ * Estas variables se ajustan automáticamente según el tema activo
+ */
+@layer base {
+  :root {
+    /* Recruiter Mode (Light) - Variables por defecto */
+    --color-bg-primary: #FAFAFA;
+    --color-bg-secondary: #FFFFFF;
+    --color-text-primary: #333333;
+    --color-text-secondary: #64748B;
+    --color-primary: #2563EB;
+    --color-primary-hover: #1D4ED8;
+    --color-accent: #10B981;
+    --color-border: #E5E7EB;
+    
+    /* Transiciones suaves para cambios de tema */
+    --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Geek Mode (Dark) - Variables para modo oscuro */
+  .dark {
+    --color-bg-primary: #0F172A;
+    --color-bg-secondary: #1E293B;
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #CBD5E1;
+    --color-primary: #06B6D4;
+    --color-primary-hover: #0891B2;
+    --color-accent: #10B981;
+    --color-border: #334155;
+  }
+
+  /* Reset y estilos base */
+  body {
+    @apply bg-recruiter-background dark:bg-geek-background;
+    @apply text-recruiter-text dark:text-geek-text;
+    @apply font-sans antialiased;
+    transition: var(--transition-theme);
+  }
+
+  /* Scroll suave en toda la aplicación */
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+/**
+ * COMPONENTES REUTILIZABLES
+ * Clases de utilidad personalizadas para el proyecto
+ */
+@layer components {
+  /* Contenedor principal con padding responsivo */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Tarjeta base con estilos adaptativos al tema */
+  .card-base {
+    @apply bg-recruiter-card dark:bg-geek-card;
+    @apply border border-recruiter-border dark:border-geek-border;
+    @apply rounded-lg shadow-card-recruiter dark:shadow-card-geek;
+    @apply transition-all duration-300;
+  }
+
+  /* Botón primario con estilos de tema */
+  .btn-primary {
+    @apply bg-recruiter-primary dark:bg-geek-primary;
+    @apply text-white font-semibold;
+    @apply px-6 py-3 rounded-lg;
+    @apply hover:bg-recruiter-primary-hover dark:hover:bg-geek-primary-hover;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply focus:ring-recruiter-primary dark:focus:ring-geek-primary;
+    @apply active:scale-95;
+  }
+
+  /* Botón secundario */
+  .btn-secondary {
+    @apply bg-transparent;
+    @apply border-2 border-recruiter-primary dark:border-geek-secondary;
+    @apply text-recruiter-primary dark:text-geek-secondary;
+    @apply font-semibold px-6 py-3 rounded-lg;
+    @apply hover:bg-recruiter-primary dark:hover:bg-geek-secondary;
+    @apply hover:text-white;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply focus:ring-recruiter-primary dark:focus:ring-geek-secondary;
+  }
+
+  /* Texto con gradiente según el tema */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    @apply bg-gradient-recruiter dark:bg-gradient-geek;
+  }
+
+  /* Sección con espaciado consistente */
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  /* Título de sección */
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold;
+    @apply text-recruiter-text dark:text-geek-text;
+    @apply mb-4;
+  }
+
+  /* Subtítulo de sección */
+  .section-subtitle {
+    @apply text-lg md:text-xl;
+    @apply text-recruiter-secondary dark:text-geek-text-secondary;
+    @apply mb-12;
+  }
+}
+
+/**
+ * UTILIDADES PERSONALIZADAS
+ * Animaciones y efectos especiales
+ */
+@layer utilities {
+  /* Glassmorphism effect */
+  .glass-effect {
+    @apply backdrop-blur-md bg-opacity-80;
+  }
+
+  /* Animación de entrada con fade */
+  .animate-enter {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-transform duration-300;
+    @apply hover:-translate-y-1;
+  }
+
+  /* Bordes con gradiente */
+  .border-gradient {
+    border-image: linear-gradient(135deg, #2563EB 0%, #10B981 100%) 1;
+  }
+
+  .dark .border-gradient {
+    border-image: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%) 1;
+  }
+
+  /* Scrollbar personalizado */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-recruiter-background dark:bg-geek-background;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-recruiter-primary dark:bg-geek-primary;
+    @apply rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-recruiter-primary-hover dark:bg-geek-primary-hover;
+  }
+
+  /* Animación de gradiente para texto */
+  @keyframes gradient-x {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
+  }
+
+  .animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+    background-size: 200% 200%;
+  }
+}
+
+/**
+ * ANIMACIONES KEYFRAMES
+ * Definidas en tailwind.config.js pero pueden usarse directamente
+ */
+
+/* Estilos para código y sintaxis */
+code {
+  @apply font-mono text-sm;
+  @apply bg-recruiter-primary-light dark:bg-geek-primary-light;
+  @apply px-1.5 py-0.5 rounded;
+}
+
+pre {
+  @apply font-mono text-sm;
+  @apply bg-recruiter-card dark:bg-geek-card;
+  @apply p-4 rounded-lg overflow-x-auto;
+  @apply border border-recruiter-border dark:border-geek-border;
+}
+
+/* Selección de texto personalizada */
+::selection {
+  @apply bg-recruiter-primary dark:bg-geek-primary;
+  @apply text-white;
+}
+
+::-moz-selection {
+  @apply bg-recruiter-primary dark:bg-geek-primary;
+  @apply text-white;
+}

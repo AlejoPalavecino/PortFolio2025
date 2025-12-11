@@ -1,68 +1,47 @@
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
-import type { ThemeContextType } from '../types/theme';
+import type { ThemeContextValue } from '../types/theme';
 
 /**
- * Custom hook to access theme context
+ * Hook personalizado para consumir el ThemeContext
  * 
- * Provides access to the current theme mode and methods to manipulate it.
- * Must be used within a ThemeProvider component.
+ * Proporciona acceso al estado del tema y sus funciones de control
+ * de manera segura con validación de contexto
  * 
- * @throws {Error} If used outside of ThemeProvider
+ * @throws {Error} Si se usa fuera del ThemeProvider
  * 
- * @returns {ThemeContextType} Theme context containing:
- * - mode: Current theme mode ('recruiter' | 'geek')
- * - toggleTheme: Function to toggle between modes
- * - setTheme: Function to set a specific mode
- * - isRecruiterMode: Boolean indicating if recruiter mode is active
- * - isGeekMode: Boolean indicating if geek mode is active
+ * @returns {ThemeContextValue} Objeto con:
+ *   - mode: Modo actual del tema ('recruiter' | 'geek')
+ *   - toggleTheme: Función para alternar entre modos
+ *   - setTheme: Función para establecer un modo específico
+ *   - isRecruiterMode: Boolean que indica si está en modo recruiter
+ *   - isGeekMode: Boolean que indica si está en modo geek
  * 
  * @example
  * ```tsx
  * function MyComponent() {
  *   const { mode, toggleTheme, isGeekMode } = useTheme();
- *   
+ * 
  *   return (
- *     <div>
- *       <p>Current mode: {mode}</p>
+ *     <div className={isGeekMode ? 'dark-style' : 'light-style'}>
+ *       <p>Modo actual: {mode}</p>
  *       <button onClick={toggleTheme}>
- *         Switch to {isGeekMode ? 'Recruiter' : 'Geek'} Mode
+ *         Cambiar a {isGeekMode ? 'Recruiter' : 'Geek'} Mode
  *       </button>
  *     </div>
  *   );
  * }
  * ```
- * 
- * @example
- * ```tsx
- * function ThemeButton() {
- *   const { setTheme, isRecruiterMode } = useTheme();
- *   
- *   return (
- *     <button 
- *       onClick={() => setTheme('geek')}
- *       className={isRecruiterMode ? 'bg-recruiter-accent' : 'bg-geek-cyan'}
- *     >
- *       Activate Geek Mode
- *     </button>
- *   );
- * }
- * ```
  */
-export const useTheme = (): ThemeContextType => {
+export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
-  
+
   if (context === undefined) {
     throw new Error(
-      'useTheme must be used within a ThemeProvider. ' +
-      'Please wrap your component tree with <ThemeProvider>.'
+      'useTheme debe ser usado dentro de un ThemeProvider. ' +
+      'Asegúrate de envolver tu componente con <ThemeProvider>.'
     );
   }
-  
-  return context;
-};
 
-/**
- * Type export for consumers who need the return type
- */
-export type UseThemeReturn = ThemeContextType;
+  return context;
+}

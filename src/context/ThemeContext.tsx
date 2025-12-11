@@ -1,121 +1,107 @@
-import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import type { ThemeMode, ThemeContextType } from '../types/theme';
+import React, { createContext, useEffect, useState, useCallback } from 'react';
+import type { ThemeMode, ThemeContextValue, ThemeProviderProps } from '../types/theme';
 
+/**
+ * Clave para persistir el tema en localStorage
+ */
 const THEME_STORAGE_KEY = 'portfolio-theme-mode';
 
 /**
- * Theme Context
- * Provides global theme state management for the entire application
+ * Valor por defecto del tema
  */
-export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-interface ThemeProviderProps {
-  children: ReactNode;
-  /** Initial theme mode (optional, defaults to 'recruiter' or localStorage value) */
-  initialMode?: ThemeMode;
-}
+const DEFAULT_THEME: ThemeMode = 'recruiter';
 
 /**
- * ThemeProvider Component
- * Wraps the application to provide theme context to all children
- * Handles theme persistence via localStorage and DOM class manipulation
+ * Context para el manejo del tema de la aplicación
+ * Soporta dos modos: 'recruiter' (claro/profesional) y 'geek' (oscuro/técnico)
+ */
+export const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+/**
+ * Provider del contexto de tema
+ * 
+ * Características:
+ * - Persiste el tema seleccionado en localStorage
+ * - Aplica la clase 'dark' al elemento HTML root cuando está en modo 'geek'
+ * - Proporciona funciones para cambiar entre temas
+ * - Incluye helpers booleanos para verificar el modo actual
  * 
  * @example
  * ```tsx
- * <ThemeProvider>
+ * <ThemeProvider defaultMode="recruiter">
  *   <App />
  * </ThemeProvider>
  * ```
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ 
   children, 
-  initialMode 
+  defaultMode = DEFAULT_THEME 
 }) => {
-  // Initialize theme from localStorage or use initial/default value
+  // Estado del tema con inicialización desde localStorage
   const [mode, setMode] = useState<ThemeMode>(() => {
-    if (initialMode) return initialMode;
-    
     try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY);
-      if (stored === 'recruiter' || stored === 'geek') {
-        return stored;
+      const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      if (storedTheme === 'recruiter' || storedTheme === 'geek') {
+        return storedTheme;
       }
     } catch (error) {
-      console.warn('Failed to read theme from localStorage:', error);
+      console.warn('Error al leer el tema desde localStorage:', error);
     }
-    
-    return 'recruiter'; // Default to recruiter mode
+    return defaultMode;
   });
 
   /**
-   * Apply theme to DOM
-   * Updates document classes and localStorage
+   * Aplica la clase 'dark' al elemento root del HTML
+   * para que Tailwind pueda aplicar los estilos del modo oscuro
    */
-  const applyTheme = useCallback((newMode: ThemeMode) => {
-    const root = document.documentElement;
+  useEffect(() => {
+    const root = window.document.documentElement;
     
-    // Remove existing theme classes
-    root.classList.remove('theme-recruiter', 'theme-geek', 'dark');
-    
-    // Add new theme class
-    root.classList.add(`theme-${newMode}`);
-    
-    // Add dark class for geek mode (Tailwind dark mode)
-    if (newMode === 'geek') {
+    if (mode === 'geek') {
       root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
     }
-    
-    // Persist to localStorage
+
+    // Guardar en localStorage
     try {
-      localStorage.setItem(THEME_STORAGE_KEY, newMode);
+      localStorage.setItem(THEME_STORAGE_KEY, mode);
     } catch (error) {
-      console.warn('Failed to save theme to localStorage:', error);
+      console.warn('Error al guardar el tema en localStorage:', error);
     }
-  }, []);
+  }, [mode]);
 
   /**
-   * Toggle between recruiter and geek modes
+   * Alterna entre los dos modos disponibles
    */
   const toggleTheme = useCallback(() => {
-    setMode((prevMode) => {
-      const newMode: ThemeMode = prevMode === 'recruiter' ? 'geek' : 'recruiter';
-      return newMode;
-    });
+    setMode(prevMode => prevMode === 'recruiter' ? 'geek' : 'recruiter');
   }, []);
 
   /**
-   * Set a specific theme mode
+   * Establece un tema específico
    */
   const setTheme = useCallback((newMode: ThemeMode) => {
     setMode(newMode);
   }, []);
 
-  // Apply theme whenever mode changes
-  useEffect(() => {
-    applyTheme(mode);
-  }, [mode, applyTheme]);
+  // Valores computados para facilitar el uso
+  const isRecruiterMode = mode === 'recruiter';
+  const isGeekMode = mode === 'geek';
 
-  // Apply initial theme on mount
-  useEffect(() => {
-    applyTheme(mode);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const contextValue: ThemeContextType = {
+  const value: ThemeContextValue = {
     mode,
     toggleTheme,
     setTheme,
-    isRecruiterMode: mode === 'recruiter',
-    isGeekMode: mode === 'geek',
+    isRecruiterMode,
+    isGeekMode,
   };
 
   return (
-    <ThemeContext.Provider value={contextValue}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
-/**
- * Display name for debugging
- */
 ThemeProvider.displayName = 'ThemeProvider';

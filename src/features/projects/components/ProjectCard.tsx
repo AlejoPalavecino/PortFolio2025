@@ -198,7 +198,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
         />
 
         {/* Imagen del Proyecto con Zoom */}
-        <div className="relative aspect-video overflow-hidden bg-gray-900">
+        <div className="relative aspect-video overflow-hidden bg-gray-900 rounded-t-2xl">
           <motion.div
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -209,21 +209,37 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
             }}
             className="w-full h-full"
           >
-            {/* Placeholder gradient background */}
-            <div
-              className={`
-                w-full h-full
-                bg-gradient-to-br ${colors.gradient}
-                opacity-20
-              `}
-            />
+            {/* Imagen de portada del proyecto */}
+            {(project.cover_image_url || project.cover_image) ? (
+              <img
+                src={project.cover_image_url || project.cover_image}
+                alt={`Portada de ${project.title}`}
+                className="w-full h-full object-cover object-center"
+                loading="lazy"
+                onError={(e) => {
+                  // Fallback a imagen placeholder si falla la carga
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop';
+                }}
+              />
+            ) : (
+              <>
+                {/* Placeholder gradient background si no hay imagen */}
+                <div
+                  className={`
+                    w-full h-full
+                    bg-gradient-to-br ${colors.gradient}
+                    opacity-20
+                  `}
+                />
 
-            {/* Icon overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-8xl opacity-10 filter blur-sm">
-                {getTechIcon(project.tags[0] || 'default')}
-              </span>
-            </div>
+                {/* Icon overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-8xl opacity-10 filter blur-sm">
+                    {getTechIcon(project.tags[0] || 'default')}
+                  </span>
+                </div>
+              </>
+            )}
 
             {/* Overlay gradient on hover */}
             <motion.div

@@ -24,6 +24,7 @@ export interface Certification {
   issue_date: string; // Formato: "2024-03-15"
   category: CertificationCategory;
   credential_url: string | null;
+  certificate_file_url: string | null; // Imagen o PDF del certificado
   related_project_id: string | null;
   related_project_title?: string; // Nombre del proyecto vinculado (si existe)
 }
@@ -61,6 +62,7 @@ const transformCertification = (
     issue_date: dbCert.issue_date,
     category: dbCert.category,
     credential_url: dbCert.credential_url,
+    certificate_file_url: dbCert.certificate_file_url,
     related_project_id: dbCert.related_project_id,
     related_project_title: relatedProject?.title,
   };

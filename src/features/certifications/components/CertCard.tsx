@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, ExternalLink, Calendar, Code2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Award, ExternalLink, Calendar, Code2, GraduationCap, Trophy, Ticket } from 'lucide-react';
 import { useTheme } from '../../../hooks';
 
 /**
@@ -26,6 +26,7 @@ interface Certification {
   issue_date: string;
   category: 'Event' | 'Study' | 'Competition';
   credential_url: string | null;
+  certificate_file_url: string | null;
   related_project_id: string | null;
   related_project_title?: string;
 }
@@ -56,31 +57,34 @@ export const CertCard: React.FC<CertCardProps> = ({
   const { isGeekMode } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
 
-  // 🎨 Estilos por categoría (Neón suave)
+  // 🎨 Estilos por categoría (Neón suave) - Iconos dinámicos
   const categoryStyles = {
-    Event: {
+    Study: {
       badge: 'from-cyan-400/90 to-blue-500/90',
       border: 'border-cyan-400/30',
       glow: 'shadow-[0_0_24px_rgba(6,182,212,0.4)]',
-      icon: Sparkles,
-      label: 'Evento',
+      icon: GraduationCap,
+      label: 'Certificación',
       textColor: 'text-cyan-400',
+      bgColor: 'bg-cyan-400/10',
     },
-    Study: {
+    Competition: {
+      badge: 'from-yellow-400/90 to-amber-500/90',
+      border: 'border-yellow-400/30',
+      glow: 'shadow-[0_0_24px_rgba(250,204,21,0.4)]',
+      icon: Trophy,
+      label: 'Competencia',
+      textColor: 'text-yellow-400',
+      bgColor: 'bg-yellow-400/10',
+    },
+    Event: {
       badge: 'from-purple-400/90 to-pink-500/90',
       border: 'border-purple-400/30',
       glow: 'shadow-[0_0_24px_rgba(168,85,247,0.4)]',
-      icon: Award,
-      label: 'Certificación',
+      icon: Ticket,
+      label: 'Evento',
       textColor: 'text-purple-400',
-    },
-    Competition: {
-      badge: 'from-rose-400/90 to-orange-500/90',
-      border: 'border-rose-400/30',
-      glow: 'shadow-[0_0_24px_rgba(251,113,133,0.4)]',
-      icon: CheckCircle2,
-      label: 'Competencia',
-      textColor: 'text-rose-400',
+      bgColor: 'bg-purple-400/10',
     },
   };
 
@@ -166,21 +170,95 @@ export const CertCard: React.FC<CertCardProps> = ({
           />
         </div>
 
+        {/* 📸 Imagen/PDF del Certificado (si existe) */}
+        {certification.certificate_file_url && (
+          <div className="relative w-full h-48 overflow-hidden rounded-t-2xl bg-gray-900">
+            <motion.a
+              href={certification.certificate_file_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.4 }}
+              className="block w-full h-full"
+            >
+              {certification.certificate_file_url.endsWith('.pdf') ? (
+                // Preview para PDF con icono
+                <div className={`
+                  w-full h-full flex flex-col items-center justify-center gap-3
+                  bg-gradient-to-br ${style.badge}
+                `}>
+                  <Award className="w-16 h-16 text-white" strokeWidth={1.5} />
+                  <span className="text-white text-sm font-semibold px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm">
+                    Certificado PDF
+                  </span>
+                </div>
+              ) : (
+                // Imagen del certificado
+                <img
+                  src={certification.certificate_file_url}
+                  alt={`Certificado de ${certification.title}`}
+                  className="w-full h-full object-cover object-center"
+                  loading="lazy"
+                  onError={(e) => {
+                    // Fallback a vista de icono si la imagen falla
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br ${style.badge.replace(/\//g, '\\/')}">
+                          <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
+                          </svg>
+                          <span class="text-white text-sm font-semibold px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm">
+                            Certificado
+                          </span>
+                        </div>
+                      `;
+                    }
+                  }}
+                />
+              )}
+              
+              {/* Overlay oscuro sutil en hover */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                className="absolute inset-0 bg-black/20 flex items-center justify-center"
+              >
+                <span className="text-white text-sm font-semibold px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm">
+                  Click para ver
+                </span>
+              </motion.div>
+            </motion.a>
+          </div>
+        )}
+
         {/* Header: Logo Issuer + Badge */}
         <div className="relative z-10 p-6 pb-4">
           <div className="flex items-start justify-between gap-4 mb-4">
-            {/* Logo del Emisor en círculo blanco para contraste */}
+            {/* Logo del Emisor o Placeholder de Categoría */}
             <motion.div
               whileHover={{ scale: 1.08, rotate: 5 }}
-              className="flex-shrink-0 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center p-2 border-2 border-gray-100"
+              className={`
+                flex-shrink-0 w-12 h-12 rounded-full shadow-lg flex items-center justify-center p-2 border-2
+                ${
+                  getIssuerLogo(certification.issuer) !== 'https://cdn.simpleicons.org/certificate/FFFFFF'
+                    ? 'bg-white border-gray-100'
+                    : `${style.bgColor} ${style.border}`
+                }
+              `}
             >
-              <img 
-                src={getIssuerLogo(certification.issuer)}
-                alt={`${certification.issuer} logo`}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-contain"
-              />
+              {getIssuerLogo(certification.issuer) !== 'https://cdn.simpleicons.org/certificate/FFFFFF' ? (
+                <img 
+                  src={getIssuerLogo(certification.issuer)}
+                  alt={`${certification.issuer} logo`}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <CategoryIcon className={`w-6 h-6 ${style.textColor}`} strokeWidth={2} />
+              )}
             </motion.div>
 
             {/* Badge de Categoría */}
@@ -225,8 +303,9 @@ export const CertCard: React.FC<CertCardProps> = ({
           </div>
         </div>
 
-        {/* Footer: Credential URL */}
+        {/* Footer: Links de Credenciales */}
         <div className="relative z-10 p-6 pt-4 border-t border-white/10">
+          {/* URL de credencial online */}
           {certification.credential_url && (
             <motion.a
               href={certification.credential_url}
@@ -241,7 +320,7 @@ export const CertCard: React.FC<CertCardProps> = ({
               `}
             >
               <ExternalLink size={16} />
-              <span>Ver credencial</span>
+              <span>Verificar credencial</span>
             </motion.a>
           )}
         </div>

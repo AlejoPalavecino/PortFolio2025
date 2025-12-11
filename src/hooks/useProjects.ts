@@ -23,6 +23,7 @@ export interface Project {
   description: string; // Alias para short_description
   tags: string[]; // Mapeado desde skills
   cover_image: string; // Mapeado desde cover_image_url
+  cover_image_url: string; // Campo original de la base de datos
   demo_url: string | null;
   demoUrl: string | null; // Alias para demo_url
   repo_url: string | null;
@@ -56,6 +57,7 @@ const transformProject = (dbProject: DBProject & { skills?: DBSkill[] }): Projec
     description: dbProject.short_description, // Alias
     tags: dbProject.skills?.map((skill: DBSkill) => skill.name) || [],
     cover_image: dbProject.cover_image_url || '/placeholder-project.jpg',
+    cover_image_url: dbProject.cover_image_url || '/placeholder-project.jpg',
     demo_url: dbProject.demo_url,
     demoUrl: dbProject.demo_url, // Alias
     repo_url: dbProject.repo_url,
@@ -80,6 +82,8 @@ export const useProjects = (options: UseProjectsOptions = {}): UseProjectsReturn
       setLoading(true);
       setError(null);
 
+      console.log('🔍 [useProjects] Iniciando fetch de proyectos...', { featuredOnly });
+
       // Query base con JOIN a skills a través de project_skills
       let query = supabase
         .from('projects')
@@ -97,6 +101,7 @@ export const useProjects = (options: UseProjectsOptions = {}): UseProjectsReturn
       }
 
       const { data, error: fetchError } = await query;
+      console.log('📦 [useProjects] Data recibida de Supabase:', data);
 
       if (fetchError) {
         console.error('❌ Error al obtener proyectos:', fetchError);
@@ -110,17 +115,30 @@ export const useProjects = (options: UseProjectsOptions = {}): UseProjectsReturn
           ?.map((ps: { skills: DBSkill | null }) => ps.skills)
           .filter((skill: DBSkill | null): skill is DBSkill => skill !== null) || [];
 
+        console.log(`🔄 [useProjects] Transformando proyecto "${project.title}":`, {
+          project_skills_raw: project.project_skills,
+          skills_extracted: skills.map((s: DBSkill) => s.name),
+        });
+
         return transformProject({
           ...project,
           skills,
         });
       });
 
+      console.log('✅ [useProjects] Proyectos transformados:', transformedProjects.length, 'proyectos');
+      console.table(transformedProjects.map(p => ({
+        title: p.title,
+        tags: p.tags.join(', '),
+        featured: p.is_featured,
+      })));
+
       setProjects(transformedProjects);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido al cargar proyectos';
       setError(errorMessage);
-      console.error('❌ useProjects error:', err);
+      console.error('❌ [useProjects] Error al cargar proyectos:', err);
+      console.error('❌ [useProjects] Stack trace:', err instanceof Error ? err.stack : 'N/A');
     } finally {
       setLoading(false);
     }

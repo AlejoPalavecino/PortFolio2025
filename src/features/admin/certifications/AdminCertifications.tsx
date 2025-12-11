@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2, Search, Loader2, X, Save, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Loader2, X, Save, ExternalLink, Upload } from 'lucide-react';
 import { useCertifications } from '@/hooks/useCertifications';
 import { useProjects } from '@/hooks/useProjects';
 import { supabase } from '@/lib/supabase';
@@ -23,6 +23,7 @@ interface CertFormData {
   issue_date: string;
   category: CertificationCategory;
   credential_url: string;
+  certificate_file_url: string;
   related_project_id: string | null;
 }
 
@@ -37,6 +38,8 @@ export const AdminCertifications: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CertFormData>({
     title: '',
@@ -44,6 +47,7 @@ export const AdminCertifications: React.FC = () => {
     issue_date: new Date().toISOString().split('T')[0],
     category: 'Study',
     credential_url: '',
+    certificate_file_url: '',
     related_project_id: null,
   });
 
@@ -62,6 +66,7 @@ export const AdminCertifications: React.FC = () => {
       issue_date: new Date().toISOString().split('T')[0],
       category: 'Study',
       credential_url: '',
+      certificate_file_url: '',
       related_project_id: null,
     });
     setIsModalOpen(true);
@@ -89,6 +94,7 @@ export const AdminCertifications: React.FC = () => {
       issue_date: data.issue_date,
       category: data.category,
       credential_url: data.credential_url || '',
+      certificate_file_url: data.certificate_file_url || '',
       related_project_id: data.related_project_id,
     });
     setIsModalOpen(true);
@@ -106,6 +112,7 @@ export const AdminCertifications: React.FC = () => {
         issue_date: formData.issue_date,
         category: formData.category,
         credential_url: formData.credential_url || null,
+        certificate_file_url: formData.certificate_file_url || null,
         related_project_id: formData.related_project_id || null,
       };
 
@@ -165,6 +172,62 @@ export const AdminCertifications: React.FC = () => {
       year: 'numeric', 
       month: 'long' 
     });
+  };
+
+  // Handler para upload de archivo (imagen o PDF)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+      alert('Solo se permiten imágenes (JPG, PNG, WebP) o archivos PDF');
+      return;
+    }
+
+    // Validar tamaño (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('El archivo no debe superar 10MB');
+      return;
+    }
+
+    setUploadingFile(true);
+
+    try {
+      // Generar nombre único para el archivo
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `certifications/${fileName}`;
+
+      // Subir a Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio-assets')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Obtener URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio-assets')
+        .getPublicUrl(filePath);
+
+      setFormData((prev) => ({
+        ...prev,
+        certificate_file_url: publicUrl,
+      }));
+      setFilePreview(publicUrl);
+
+      console.log('✅ Archivo subido:', publicUrl);
+    } catch (err: any) {
+      console.error('❌ Error al subir archivo:', err);
+      alert(`Error al subir archivo: ${err.message}`);
+    } finally {
+      setUploadingFile(false);
+    }
   };
 
   if (error) {
@@ -426,6 +489,74 @@ export const AdminCertifications: React.FC = () => {
                     className={`w-full px-3 py-2 rounded-lg border ${isGeekMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
                     placeholder="https://..."
                   />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className={`block text-sm font-medium mb-2 ${isGeekMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Archivo del Certificado (Opcional)
+                  </label>
+                  
+                  {/* Preview del archivo si existe */}
+                  {(filePreview || formData.certificate_file_url) && (
+                    <div className={`mb-3 p-3 rounded-lg border ${isGeekMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                      {(filePreview || formData.certificate_file_url)?.endsWith('.pdf') ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">📄</span>
+                          <span className={`text-sm ${isGeekMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            PDF cargado
+                          </span>
+                          <a
+                            href={filePreview || formData.certificate_file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`ml-auto text-xs ${isGeekMode ? 'text-cyan-400 hover:text-cyan-300' : 'text-blue-600 hover:text-blue-700'}`}
+                          >
+                            Ver PDF
+                          </a>
+                        </div>
+                      ) : (
+                        <img
+                          src={filePreview || formData.certificate_file_url}
+                          alt="Preview"
+                          className="w-full h-32 object-contain rounded"
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  <label
+                    className={`
+                      flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed cursor-pointer
+                      transition-colors
+                      ${uploadingFile ? 'opacity-50 cursor-not-allowed' : ''}
+                      ${isGeekMode 
+                        ? 'border-gray-600 hover:border-cyan-500 hover:bg-cyan-500/10 text-gray-300' 
+                        : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700'
+                      }
+                    `}
+                  >
+                    {uploadingFile ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Subiendo...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-5 h-5" />
+                        <span>{filePreview || formData.certificate_file_url ? 'Cambiar Archivo' : 'Subir Imagen o PDF'}</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      onChange={handleFileUpload}
+                      disabled={uploadingFile}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className={`mt-1 text-xs ${isGeekMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                    JPG, PNG, WebP o PDF. Máximo 10MB
+                  </p>
                 </div>
               </div>
 

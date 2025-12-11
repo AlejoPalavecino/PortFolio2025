@@ -70,6 +70,7 @@ export interface Certification {
   issue_date: string; // ISO date (YYYY-MM-DD)
   category: CertificationCategory;
   credential_url: string | null;
+  certificate_file_url: string | null; // Imagen o PDF del certificado
   related_project_id: string | null; // FK a projects (nullable)
   created_at: string; // ISO timestamp
   updated_at: string; // ISO timestamp

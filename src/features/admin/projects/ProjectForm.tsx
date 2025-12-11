@@ -65,6 +65,8 @@ export const ProjectForm: React.FC = () => {
 
     const loadProject = async () => {
       try {
+        console.log('🔍 [ProjectForm] Cargando proyecto para editar, ID:', id);
+
         // Obtener proyecto con sus skills
         const { data, error } = await supabase
           .from('projects')
@@ -77,10 +79,13 @@ export const ProjectForm: React.FC = () => {
           .eq('id', id)
           .single() as any;
 
+        console.log('📦 [ProjectForm] Data recibida:', data);
+
         if (error) throw error;
 
         // Extraer IDs de skills
         const skillIds = (data.project_skills as any[])?.map((ps) => ps.skill_id) || [];
+        console.log('🔄 [ProjectForm] Skills extraídos:', skillIds);
 
         setFormData({
           title: data.title,
@@ -138,6 +143,7 @@ export const ProjectForm: React.FC = () => {
 
   // Handler para toggle de skills
   const handleSkillToggle = (skillId: string) => {
+    console.log('🔄 [ProjectForm] Toggle skill, ID:', skillId);
     setFormData((prev) => ({
       ...prev,
       selectedSkills: prev.selectedSkills.includes(skillId)
@@ -214,6 +220,11 @@ export const ProjectForm: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    console.log('💾 [ProjectForm] Guardando proyecto...', {
+      isEditMode,
+      formData,
+    });
+
     try {
       // Validaciones
       if (!formData.title || !formData.slug || !formData.short_description) {
@@ -223,6 +234,8 @@ export const ProjectForm: React.FC = () => {
       if (formData.selectedSkills.length === 0) {
         throw new Error('Selecciona al menos una tecnología');
       }
+
+      console.log('✅ [ProjectForm] Validaciones pasadas');
 
       // Preparar datos del proyecto
       const projectData: Partial<DBProject> = {
@@ -277,13 +290,15 @@ export const ProjectForm: React.FC = () => {
         skill_id: skillId,
       }));
 
+      console.log('🔗 [ProjectForm] Insertando relaciones project_skills:', skillRelations);
+
       const { error: relationsError } = await supabase
         .from('project_skills')
         .insert(skillRelations as any);
 
       if (relationsError) throw relationsError;
 
-      console.log('✅ Relaciones project_skills creadas');
+      console.log('✅ [ProjectForm] Relaciones project_skills creadas correctamente');
 
       // Redirigir a la lista
       navigate('/admin/projects');
@@ -676,12 +691,12 @@ export const ProjectForm: React.FC = () => {
           {/* Skills Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {skills.map((skill) => {
-              const isSelected = formData.selectedSkills.includes(skill.name);
+              const isSelected = formData.selectedSkills.includes(skill.id);
               return (
                 <button
-                  key={skill.name}
+                  key={skill.id}
                   type="button"
-                  onClick={() => handleSkillToggle(skill.name)}
+                  onClick={() => handleSkillToggle(skill.id)}
                   className={`
                     flex items-center gap-2 p-3 rounded-lg border-2
                     transition-all duration-200

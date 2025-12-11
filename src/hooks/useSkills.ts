@@ -17,6 +17,7 @@ import type { Skill as DBSkill, SkillCategory } from '@/types/supabase';
 
 // Tipo de skill como lo espera la UI (basado en SkillsVelocity)
 export interface Skill {
+  id: string; // UUID de la skill
   name: string;
   logo: string; // Mapeado desde icon_url
   color: string; // Extraído del icon_url o generado
@@ -54,6 +55,7 @@ const transformSkill = (dbSkill: DBSkill): Skill => {
     : '#3B82F6';
 
   return {
+    id: dbSkill.id, // Incluir UUID
     name: dbSkill.name,
     logo: dbSkill.icon_url || `https://via.placeholder.com/48?text=${dbSkill.name.charAt(0)}`,
     color,

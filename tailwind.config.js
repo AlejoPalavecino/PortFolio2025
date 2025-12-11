@@ -4,45 +4,61 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // Enable class-based dark mode for theme switching
+  darkMode: 'class', // Usamos 'class' para controlar el tema mediante la clase 'dark' en el HTML
   theme: {
     extend: {
       colors: {
-        // Recruiter Mode Colors
+        // Modo Recruiter (Light Mode)
         recruiter: {
           background: '#FAFAFA',
-          text: '#333333',
-          accent: '#2563EB',
-          'accent-hover': '#1D4ED8',
-          'accent-light': '#DBEAFE',
+          text: '#1a1a1a',
+          primary: '#2563EB',
+          'primary-hover': '#1D4ED8',
+          'primary-light': '#DBEAFE',
           secondary: '#64748B',
-          border: '#E2E8F0',
+          accent: '#10B981',
+          border: '#E5E7EB',
+          card: '#FFFFFF',
         },
-        // Geek Mode Colors
+        // Modo Geek (Dark Mode)
         geek: {
-          background: '#0F172A',
-          'background-card': '#1E293B',
-          'background-elevated': '#334155',
+          background: '#0a0a0f',
+          'background-secondary': '#141420',
           text: '#FFFFFF',
-          'text-secondary': '#CBD5E1',
-          cyan: '#06B6D4',
-          'cyan-hover': '#0891B2',
-          'cyan-glow': 'rgba(6, 182, 212, 0.3)',
-          purple: '#8B5CF6',
-          'purple-hover': '#7C3AED',
-          'purple-glow': 'rgba(139, 92, 246, 0.3)',
-          border: '#334155',
+          'text-secondary': '#94a3b8',
+          primary: '#06B6D4',
+          'primary-hover': '#0891B2',
+          'primary-light': '#164E63',
+          secondary: '#8B5CF6',
+          'secondary-hover': '#7C3AED',
+          'secondary-light': '#4C1D95',
+          accent: '#10B981',
+          border: 'rgba(255, 255, 255, 0.1)',
+          card: 'rgba(30, 41, 59, 0.4)',
+        },
+        // Glassmorphism colors
+        glass: {
+          'white': 'rgba(255, 255, 255, 0.05)',
+          'white-10': 'rgba(255, 255, 255, 0.1)',
+          'white-20': 'rgba(255, 255, 255, 0.2)',
+          'dark': 'rgba(10, 10, 15, 0.4)',
+          'dark-60': 'rgba(10, 10, 15, 0.6)',
+          'border-light': 'rgba(255, 255, 255, 0.1)',
+          'border-dark': 'rgba(0, 0, 0, 0.1)',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['Fira Code', 'Consolas', 'Monaco', 'Courier New', 'monospace'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.5s ease-out',
         'slide-down': 'slideDown 0.5s ease-out',
-        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'scale-in': 'scaleIn 0.3s ease-out',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
         'float': 'float 3s ease-in-out infinite',
       },
       keyframes: {
@@ -58,32 +74,37 @@ export default {
           '0%': { transform: 'translateY(-20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
-        glowPulse: {
-          '0%, 100%': { 
-            boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)',
-          },
-          '50%': { 
-            boxShadow: '0 0 40px rgba(139, 92, 246, 0.5)',
-          },
+        scaleIn: {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        glow: {
+          '0%': { boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(139, 92, 246, 0.2)' },
+          '100%': { boxShadow: '0 0 30px rgba(6, 182, 212, 0.5), 0 0 60px rgba(139, 92, 246, 0.3)' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
         },
       },
+      boxShadow: {
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+        'glass-sm': '0 4px 16px 0 rgba(31, 38, 135, 0.2)',
+        'glow-cyan': '0 0 20px rgba(6, 182, 212, 0.4), 0 0 40px rgba(6, 182, 212, 0.2)',
+        'glow-purple': '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2)',
+        'glow-mixed': '0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(139, 92, 246, 0.2)',
+        'recruiter': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'geek': '0 4px 6px -1px rgba(6, 182, 212, 0.1), 0 2px 4px -1px rgba(139, 92, 246, 0.06)',
+        'card-recruiter': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'card-geek': '0 10px 15px -3px rgba(6, 182, 212, 0.15), 0 4px 6px -2px rgba(139, 92, 246, 0.1)',
+      },
       backdropBlur: {
         xs: '2px',
       },
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'geek-gradient': 'linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%)',
-        'geek-gradient-hover': 'linear-gradient(135deg, #0891B2 0%, #7C3AED 100%)',
-      },
-      boxShadow: {
-        'glow-cyan': '0 0 20px rgba(6, 182, 212, 0.5)',
-        'glow-purple': '0 0 20px rgba(139, 92, 246, 0.5)',
-        'glow-mixed': '0 0 30px rgba(6, 182, 212, 0.3), 0 0 60px rgba(139, 92, 246, 0.3)',
+        'gradient-recruiter': 'linear-gradient(135deg, #2563EB 0%, #10B981 100%)',
+        'gradient-geek': 'linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%)',
+        'gradient-text': 'linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #EC4899 100%)',
       },
     },
   },

@@ -3,4 +3,4 @@
  */
 
 export { ProjectsGallery } from './ProjectsGallery';
-export { ProjectCard, ProjectCardSkeleton } from './components/ProjectCard';
+export { ProjectCard } from './components/ProjectCard';

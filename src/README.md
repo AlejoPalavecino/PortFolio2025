@@ -36,14 +36,16 @@ src/
 The portfolio uses a dual-theme system:
 
 ### Recruiter Mode
+
 - **Target**: Recruiters and HR professionals
 - **Style**: Clean, professional, corporate
-- **Colors**: 
+- **Colors**:
   - Background: #FAFAFA (Off-white)
   - Text: #333333 (Dark gray)
   - Accent: #2563EB (Corporate blue)
 
 ### Geek Mode
+
 - **Target**: Technical professionals and developers
 - **Style**: Dark, immersive, with neon accents
 - **Colors**:
@@ -57,8 +59,8 @@ The portfolio uses a dual-theme system:
 ### Setting up ThemeProvider in your App
 
 ```tsx
-import { ThemeProvider } from './context/ThemeContext';
-import App from './App';
+import { ThemeProvider } from "./context/ThemeContext";
+import App from "./App";
 
 function Root() {
   return (
@@ -72,19 +74,21 @@ function Root() {
 ### Using the theme in components
 
 ```tsx
-import { useTheme } from './hooks/useTheme';
+import { useTheme } from "./hooks/useTheme";
 
 function MyComponent() {
   const { mode, toggleTheme, isGeekMode } = useTheme();
-  
+
   return (
-    <div className={isGeekMode ? 'bg-geek-background' : 'bg-recruiter-background'}>
-      <h1 className={isGeekMode ? 'text-geek-text' : 'text-recruiter-text'}>
+    <div
+      className={isGeekMode ? "bg-geek-background" : "bg-recruiter-background"}
+    >
+      <h1 className={isGeekMode ? "text-geek-text" : "text-recruiter-text"}>
         Welcome to {mode} mode!
       </h1>
-      <button 
+      <button
         onClick={toggleTheme}
-        className={isGeekMode ? 'bg-geek-cyan' : 'bg-recruiter-accent'}
+        className={isGeekMode ? "bg-geek-cyan" : "bg-recruiter-accent"}
       >
         Toggle Theme
       </button>
@@ -96,12 +100,14 @@ function MyComponent() {
 ## 📦 Features Organization
 
 Each feature folder should contain:
+
 - Components specific to that feature
 - Custom hooks for that feature
 - Types/interfaces for that feature
 - Utilities specific to that feature
 
 Example structure for `features/projects/`:
+
 ```
 projects/
 ├── components/
@@ -127,11 +133,13 @@ projects/
 ## 🔧 TailwindCSS Custom Classes
 
 Use semantic class names for themes:
+
 - `bg-recruiter-background` / `bg-geek-background`
 - `text-recruiter-text` / `text-geek-text`
 - `bg-recruiter-accent` / `bg-geek-cyan` / `bg-geek-purple`
 
 Custom animations available:
+
 - `animate-fade-in`
 - `animate-slide-up`
 - `animate-glow-pulse`

@@ -1,7 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ExternalLink, Github } from 'lucide-react';
 import { useTheme } from '../../../hooks';
+import { useSkills } from '../../../hooks/useSkills';
 import type { Project } from '../../../hooks/useProjects';
 
 /**
@@ -22,9 +23,19 @@ interface ProjectCardProps {
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
   const { isGeekMode } = useTheme();
+  const { skills } = useSkills();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isHighlighted, setIsHighlighted] = useState(false);
+
+  // Crear mapa de skills por nombre para acceso rápido a logos
+  const skillsMap = useMemo(() => {
+    const map = new Map();
+    skills.forEach(skill => {
+      map.set(skill.name.toLowerCase(), skill);
+    });
+    return map;
+  }, [skills]);
 
   // Efecto de highlight cuando se navega desde un certificado
   useEffect(() => {
@@ -95,23 +106,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
     scale.set(1);
   };
 
-  // Iconos de tecnologías (placeholder)
-  const techIcons: Record<string, string> = {
-    react: '⚛️',
-    typescript: '📘',
-    nextjs: '▲',
-    tailwind: '🎨',
-    framer: '🎭',
-    node: '🟢',
-    express: '🚂',
-    mongodb: '🍃',
-    postgresql: '🐘',
-    default: '🔧',
-  };
-
-  const getTechIcon = (tech: string) => {
-    const key = tech.toLowerCase().replace(/\s+/g, '');
-    return techIcons[key] || techIcons.default;
+  // Obtener logo real de la skill desde el mapa
+  const getSkillLogo = (skillName: string): { logo: string; color: string } => {
+    const skill = skillsMap.get(skillName.toLowerCase());
+    if (skill) {
+      return { logo: skill.logo, color: skill.color };
+    }
+    // Fallback si no se encuentra la skill
+    return { 
+      logo: `https://via.placeholder.com/24?text=${skillName.charAt(0)}`,
+      color: '#3B82F6'
+    };
   };
 
   // Colores según tipo de proyecto
@@ -234,9 +239,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
 
                 {/* Icon overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-8xl opacity-10 filter blur-sm">
-                    {getTechIcon(project.tags[0] || 'default')}
-                  </span>
+                  {project.tags[0] && (
+                    <img
+                      src={getSkillLogo(project.tags[0]).logo}
+                      alt={project.tags[0]}
+                      className="w-32 h-32 object-contain opacity-10 filter blur-sm"
+                    />
+                  )}
                 </div>
               </>
             )}
@@ -381,25 +390,36 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
             transition={{ duration: 0.3 }}
             className="flex flex-wrap gap-2"
           >
-            {project.tags.slice(0, 4).map((tech) => (
-              <span
-                key={tech}
-                className={`
-                  inline-flex items-center gap-1
-                  px-3 py-1 rounded-full
-                  backdrop-blur-md
-                  ${isGeekMode ? 'bg-white/5' : 'bg-gray-100/80'}
-                  border border-white/10
-                  text-xs font-medium
-                  ${isGeekMode ? 'text-gray-300' : 'text-gray-700'}
-                  transition-all duration-200
-                  hover:scale-105
-                `}
-              >
-                <span>{getTechIcon(tech)}</span>
-                {tech}
-              </span>
-            ))}
+            {project.tags.slice(0, 4).map((tech) => {
+              const { logo, color } = getSkillLogo(tech);
+              return (
+                <span
+                  key={tech}
+                  className={`
+                    inline-flex items-center gap-1.5
+                    px-3 py-1 rounded-full
+                    backdrop-blur-md
+                    ${isGeekMode ? 'bg-white/5' : 'bg-gray-100/80'}
+                    border border-white/10
+                    text-xs font-medium
+                    ${isGeekMode ? 'text-gray-300' : 'text-gray-700'}
+                    transition-all duration-200
+                    hover:scale-105
+                  `}
+                  style={{
+                    borderColor: `${color}20`
+                  }}
+                >
+                  <img 
+                    src={logo} 
+                    alt={tech}
+                    className="w-4 h-4 object-contain"
+                    loading="lazy"
+                  />
+                  {tech}
+                </span>
+              );
+            })}
             {project.tags.length > 4 && (
               <span
                 className={`
